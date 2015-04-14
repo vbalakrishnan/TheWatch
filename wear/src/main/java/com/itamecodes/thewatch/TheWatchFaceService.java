@@ -39,7 +39,7 @@ public class TheWatchFaceService extends CanvasWatchFaceService {
         Paint paintBitmap;
         Time mTime;
         boolean mLowBitAmbient,mBurnInProtection;
-        Bitmap mBackGroundBitmap,mBackGroundScaledBitmap,mSecondHandBitmap,mSecondHandScaledBitmap;
+        Bitmap mBackGroundBitmap,mBackGroundScaledBitmap,mSecondHandBitmap,mSecondHandScaledBitmap,mHourScaledBitmap,mMinuteScaledBitmap;
         Paint mHourPaint;
         Paint mMinutePaint;
         private boolean mRegisteredTimeZoneReceiver=false;
@@ -96,16 +96,26 @@ public class TheWatchFaceService extends CanvasWatchFaceService {
             int height=bounds.height();
             if(mBackGroundScaledBitmap==null||mBackGroundScaledBitmap.getWidth()!=width||mBackGroundScaledBitmap.getHeight()!=height){
                 mBackGroundScaledBitmap=Bitmap.createScaledBitmap(mBackGroundBitmap,width,height,true);
-                mSecondHandScaledBitmap=Bitmap.createScaledBitmap(mSecondHandBitmap,mSecondHandBitmap.getWidth(),400,true);
+                mSecondHandScaledBitmap=Bitmap.createScaledBitmap(mSecondHandBitmap,mSecondHandBitmap.getWidth(),120,true);
+                mHourScaledBitmap=Bitmap.createScaledBitmap(mSecondHandBitmap,mSecondHandBitmap.getWidth(),80,true);
+                mMinuteScaledBitmap=Bitmap.createScaledBitmap(mSecondHandBitmap,mSecondHandBitmap.getWidth(),100,true);
             }
             canvas.drawBitmap(mBackGroundScaledBitmap,0,0,null);
             float secRot=mTime.second;
-            Log.v("vivekrot", secRot + "--");
             Matrix rotator = new Matrix();
             rotator.postRotate(secRot*6,0,mSecondHandScaledBitmap.getHeight());
             rotator.postTranslate(canvas.getWidth()/2,((canvas.getHeight()/2)-mSecondHandScaledBitmap.getHeight()));
-
             canvas.drawBitmap(mSecondHandScaledBitmap,rotator,paintBitmap);
+
+            Matrix rotatorminute = new Matrix();
+            rotatorminute.postRotate((float)((mTime.minute*6)+(secRot*0.1)),0,mMinuteScaledBitmap.getHeight());
+            rotatorminute.postTranslate(canvas.getWidth()/2,((canvas.getHeight()/2)-mMinuteScaledBitmap.getHeight()));
+            canvas.drawBitmap(mMinuteScaledBitmap,rotatorminute,paintBitmap);
+
+            Matrix rotatorhour = new Matrix();
+            rotatorhour.postRotate((float)((mTime.hour*30)+(mTime.minute*0.5)+(mTime.second*(30/3600))),0,mHourScaledBitmap.getHeight());
+            rotatorhour.postTranslate(canvas.getWidth()/2,((canvas.getHeight()/2)-mHourScaledBitmap.getHeight()));
+            canvas.drawBitmap(mHourScaledBitmap,rotatorhour,paintBitmap);
 
         }
 
