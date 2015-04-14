@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -40,7 +41,7 @@ public class TheWatchFaceService extends CanvasWatchFaceService {
         Time mTime;
         boolean mLowBitAmbient,mBurnInProtection;
         Bitmap mBackGroundBitmap,mBackGroundScaledBitmap,mSecondHandBitmap,mSecondHandScaledBitmap,mHourScaledBitmap,mMinuteScaledBitmap;
-        Paint mHourPaint;
+        Paint mCenterPaint;
         Paint mMinutePaint;
         private boolean mRegisteredTimeZoneReceiver=false;
 
@@ -86,6 +87,12 @@ public class TheWatchFaceService extends CanvasWatchFaceService {
              paintBitmap = new Paint();
             paintBitmap.setAntiAlias(true);
             paintBitmap.setFilterBitmap(true);
+            mCenterPaint=new Paint();
+            mCenterPaint.setAntiAlias(true);
+            mCenterPaint.setFilterBitmap(true);
+            mCenterPaint.setStyle(Paint.Style.FILL);
+            mCenterPaint.setColor(Color.BLUE);
+            mCenterPaint.setStrokeWidth(30);
         }
 
         @Override
@@ -103,8 +110,8 @@ public class TheWatchFaceService extends CanvasWatchFaceService {
             canvas.drawBitmap(mBackGroundScaledBitmap,0,0,null);
             float secRot=mTime.second;
             Matrix rotator = new Matrix();
-            rotator.postRotate(secRot*6,0,mSecondHandScaledBitmap.getHeight());
-            rotator.postTranslate(canvas.getWidth()/2,((canvas.getHeight()/2)-mSecondHandScaledBitmap.getHeight()));
+            rotator.postRotate(secRot*6,0,mSecondHandScaledBitmap.getHeight()-30);
+            rotator.postTranslate(canvas.getWidth()/2,((canvas.getHeight()/2)-mSecondHandScaledBitmap.getHeight())+30);
             canvas.drawBitmap(mSecondHandScaledBitmap,rotator,paintBitmap);
 
             Matrix rotatorminute = new Matrix();
@@ -116,6 +123,9 @@ public class TheWatchFaceService extends CanvasWatchFaceService {
             rotatorhour.postRotate((float)((mTime.hour*30)+(mTime.minute*0.5)+(mTime.second*(30/3600))),0,mHourScaledBitmap.getHeight());
             rotatorhour.postTranslate(canvas.getWidth()/2,((canvas.getHeight()/2)-mHourScaledBitmap.getHeight()));
             canvas.drawBitmap(mHourScaledBitmap,rotatorhour,paintBitmap);
+           // canvas.drawCircle();
+
+            canvas.drawCircle(canvas.getWidth()/2,canvas.getHeight()/2,5,mCenterPaint);
 
         }
 
